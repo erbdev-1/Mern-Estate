@@ -20,9 +20,20 @@ export const updateUser = async (req, res, next) => {
     }
 
     // Update the user by ID and return the updated user
-    const updateUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Return the updated user
-    });
+    const updateUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          username: req.body.username, // Set the username
+          email: req.body.email, // Set the email
+          password: req.body.password, // Set the password
+          avatar: req.body.avatar, // Set the avatar
+        },
+      },
+      {
+        new: true, // Return the updated user
+      }
+    );
 
     // Return the updated user without the password field in the response
     const { password, ...info } = updateUser._doc;
