@@ -11,6 +11,12 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserSuccess,
+  deleteUserFailure,
+  deleteUserStart,
+  signOutUserStart,
+  signOutUserSuccess,
+  signOutUserFailure,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 
@@ -103,6 +109,44 @@ function Profile() {
     }
   };
 
+  //! Create a function to handle the delete user action
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart()); // Dispatch the deleteUserStart action
+
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        // Make a DELETE request to the delete user route
+        method: "DELETE", // Set the request method to DELETE
+      });
+      const data = await res.json(); // Parse the JSON response data from the server
+      if (data.success === false) {
+        dispatch(deleteUserSuccess(data.message)); // Dispatch the deleteUserFailure action with the error message if the success field is false
+        return;
+      }
+      dispatch(deleteUserFailure(data)); // Dispatch the deleteUserSuccess action if the request is successful
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message)); // Dispatch the deleteUserFailure action with the error message if an error occurs
+    }
+  };
+
+  //! Create a function to handle the sign out action
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutUserStart()); // Dispatch the signOutUserStart action
+      const res = await fetch("/api/auth/signout"); // Make a GET request to the signout route
+      const data = await res.json(); // Parse the JSON response data from the server
+      if (data.success === false) {
+        dispatch(signOutUserSuccess(data.message)); // Dispatch the signOutUserFailure action with the error message if the success field is false
+        return;
+      }
+      dispatch(deleteUserSuccess(data)); // Dispatch the signOutUserSuccess action if the request is successful
+    } catch (error) {
+      dispatch(signOutUserFailure(error.message)); // Dispatch the signOutUserFailure action with the error message if an error occurs
+    }
+  };
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -166,8 +210,16 @@ function Profile() {
         </button>
       </form>
       <div className="flex justify-between mt-5">
-        <span className="text-red-700 cursor-pointer"> Delete account</span>
-        <span className="text-red-700 cursor-pointer"> Sign out</span>
+        <span
+          onClick={handleDeleteUser}
+          className="text-red-700 cursor-pointer"
+        >
+          Delete account
+        </span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
+          {" "}
+          Sign out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error ? error : ""}</p>
       <p className="text-green-700 mt-5">{updateSuccess ? "Updated" : ""}</p>
