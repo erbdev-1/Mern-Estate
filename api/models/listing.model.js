@@ -47,8 +47,17 @@ const listingSchema = new mongoose.Schema(
       required: true,
     },
     imageUrls: {
-      type: Array,
-      required: true,
+      type: [String], // Sadece basit bir string array olarak tanımlanıyor
+      required: [true, "Please upload at least one image path."],
+    },
+    videoUrls: {
+      type: [String], // Sadece basit bir string array olarak tanımlanıyor
+      validate: {
+        validator: function (array) {
+          return array.every((url) => typeof url === "string"); // Dizi içindeki her öğenin string olmasını kontrol eder
+        },
+        message: "All video paths must be valid strings.",
+      },
     },
     userRef: {
       type: String,
