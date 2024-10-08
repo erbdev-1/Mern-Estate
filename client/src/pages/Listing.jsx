@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
+import { useSelector } from "react-redux";
 import "swiper/css/bundle";
 import {
   FaBath,
@@ -12,6 +13,7 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import Contact from "../components/Contact";
 
 function Listing() {
   SwiperCore.use([Navigation]); // Add the Navigation module to SwiperCore to enable navigation arrows
@@ -19,7 +21,9 @@ function Listing() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false); // Create a state variable to store the contact form visibility
   const params = useParams(); // Get the listing ID from the URL
+  const { currentUser } = useSelector((state) => state.user); // Get the current user from the Redux store
 
   // Fetch the listing data from the server when the component mounts using the listing ID from the URL params and store it in the state variable "listing" using the setListing function provided by the useState hook
   useEffect(() => {
@@ -134,6 +138,15 @@ function Listing() {
               <span className="font-semibold text-black">Description - </span>
               {listing.description}
             </p>
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
+              <button
+                onClick={() => setContact(true)}
+                className="bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3 "
+              >
+                Contact Landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing} />}
           </div>
         </div>
       )}

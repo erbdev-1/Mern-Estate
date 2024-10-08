@@ -9,7 +9,7 @@ export const test = (req, res) => {
   });
 };
 
-// Update a user by ID (Protected Route) - /api/user/update/:id
+//! Update a user by ID (Protected Route) - /api/user/update/:id
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
     // Check if the user ID in the token matches the user ID in the request
@@ -49,6 +49,7 @@ export const updateUser = async (req, res, next) => {
   }
 };
 
+//! Delete a user by ID (Protected Route) - /api/user/delete/:id
 export const deleteUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, "you can only delete your account"));
@@ -61,6 +62,7 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
+//! Get a user by ID - /api/user/:id (Protected Route) - Add the verifyToken middleware   to the get user by ID route
 export const getUserListings = async (req, res, next) => {
   if (req.user.id === req.params.id) {
     try {
@@ -71,5 +73,19 @@ export const getUserListings = async (req, res, next) => {
     }
   } else {
     return next(errorHandler(401, "you can only view your listings"));
+  }
+};
+
+//! Get a user by ID - /api/user/:id (Protected Route) - Add the verifyToken middleware   to the get user by ID route
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return next(errorHandler(404, "User not found"));
+
+    const { password: pass, ...rest } = user._doc;
+
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
   }
 };
