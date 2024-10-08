@@ -20,7 +20,6 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { set } from "mongoose";
 
 function Profile() {
   const fileRef = useRef(null); // Create a reference to the file input element
@@ -310,7 +309,9 @@ function Profile() {
                 >
                   Delete
                 </button>
-                <button className="text-green-700 uppercase">Edit</button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className="text-green-700 uppercase">Edit</button>
+                </Link>
               </div>
             </div>
           ))}
