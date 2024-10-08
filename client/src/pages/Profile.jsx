@@ -20,6 +20,7 @@ import {
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { set } from "mongoose";
 
 function Profile() {
   const fileRef = useRef(null); // Create a reference to the file input element
@@ -161,8 +162,27 @@ function Profile() {
         return;
       }
       setUserListings(data);
+      console.log("User Listings Data: ", data);
     } catch (error) {
       setShowListingsError(true);
+    }
+  };
+
+  const handleListingDelete = async (listingId) => {
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+      }
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -268,7 +288,11 @@ function Profile() {
             >
               <Link to={`listing/${listing._id}`}>
                 <img
-                  src={listing.imageUrls[0]}
+                  src={
+                    listing.imageUrls && listing.imageUrls.length > 0
+                      ? listing.imageUrls[0]
+                      : "default-image-url"
+                  }
                   alt="listing cover"
                   className="h-16 w-16 object-contain rounded-lg"
                 />
@@ -280,7 +304,12 @@ function Profile() {
                 <p>{listing.name}</p>
               </Link>
               <div className="flex flex-col">
-                <button className="text-red-700 uppercase">Delete</button>
+                <button
+                  onClick={() => handleListingDelete(listing._id)}
+                  className="text-red-700 uppercase"
+                >
+                  Delete
+                </button>
                 <button className="text-green-700 uppercase">Edit</button>
               </div>
             </div>
