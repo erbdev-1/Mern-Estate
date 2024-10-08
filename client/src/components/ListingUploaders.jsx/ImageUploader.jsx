@@ -7,7 +7,7 @@ import {
 } from "firebase/storage";
 import { app } from "../../firebase";
 
-function ImageUploader() {
+function ImageUploader({ onImagesUpload }) {
   const [files, setFiles] = useState([]); // Seçilen dosyaları saklamak için state
   const [imageUrls, setImageUrls] = useState([]); // Yüklenen resim URL'lerini saklamak için state
   const [upLoading, setUpLoading] = useState(false); // Yükleme durumu
@@ -26,9 +26,10 @@ function ImageUploader() {
 
       Promise.all(promises)
         .then((urls) => {
-          setImageUrls([...imageUrls, ...urls]); // Yüklenen resim URL'lerini state'e ekle
-          setImageUploadError(false);
+          const newImageUrls = [...imageUrls, ...urls]; // Yüklenen resim URL'lerini state'e ekle
+          setImageUrls(newImageUrls);
           setUpLoading(false);
+          if (onImagesUpload) onImagesUpload(newImageUrls); // Eğer onImagesUpload prop'u varsa, yüklenen resim URL'lerini gönder
         })
         .catch(() => {
           setImageUploadError("Image upload failed (2 mb max per image)");
@@ -69,7 +70,11 @@ function ImageUploader() {
 
   // Belirli bir resmi silen fonksiyon
   const handleRemoveImage = (index) => {
-    setImageUrls(imageUrls.filter((_, i) => i !== index)); // Belirli indexteki resmi kaldır
+    const updatedImageUrls = imageUrls.filter((_, i) => i !== index);
+    setImageUrls(updatedImageUrls);
+    if (onImagesUpload) {
+      onImagesUpload(updatedImageUrls); // Üst bileşene güncellenmiş URL'leri iletin
+    }
   };
 
   return (

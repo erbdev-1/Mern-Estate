@@ -26,6 +26,14 @@ function CreateListing() {
   const navigate = useNavigate();
   console.log(formData);
 
+  // Callback fonksiyonu tanımlayın
+  const handleImagesUpload = (uploadedImageUrls) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      imageUrls: uploadedImageUrls,
+    }));
+  };
+
   //! Create a function that checks the form data here and sends a POST request to the server to create a new listing
 
   const handleChange = (e) => {
@@ -246,7 +254,7 @@ function CreateListing() {
           </p>
 
           {/* ImageUploader Bileşenini Burada Kullanın */}
-          <ImageUploader />
+          <ImageUploader onImagesUpload={handleImagesUpload} />
           <p className="font-semibold">
             Videos:
             <span className="font-normal text-gray-600 ml-2">
