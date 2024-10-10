@@ -1,7 +1,10 @@
 import { set } from "mongoose";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
 import ListingItem from "../components/ListingItem";
+=======
+>>>>>>> bfe9511ff04d880fce519b1e21e440ef8a20f5b7
 
 function Search() {
   const navigate = useNavigate(); // Get the navigate function from the useNavigate hook
