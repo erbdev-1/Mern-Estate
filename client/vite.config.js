@@ -11,5 +11,8 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    outDir: "public", // Build çıktısını 'public' klasörüne yönlendirir
+  },
   plugins: [react()],
 });
