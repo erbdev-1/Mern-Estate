@@ -1,10 +1,6 @@
-import { set } from "mongoose";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
 import ListingItem from "../components/ListingItem";
-=======
->>>>>>> bfe9511ff04d880fce519b1e21e440ef8a20f5b7
 
 function Search() {
   const navigate = useNavigate(); // Get the navigate function from the useNavigate hook
@@ -19,8 +15,7 @@ function Search() {
   });
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
-
-  console.log(listings);
+  const [showMore, setShowMore] = useState(false);
 
   //! Get the search query from the URL and set it to the sidebar data state when the component mounts or the URL changes
 
@@ -56,10 +51,15 @@ function Search() {
 
     const fetchListings = async () => {
       setLoading(true);
-
+      setShowMore(false);
       const searchQuery = urlParams.toString(); // Convert the URLSearchParams object to a string
       const res = await fetch(`/api/listing/get?${searchQuery}`); // Fetch the listings based on the search query
       const data = await res.json(); // Get the JSON data from the response
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
       setListings(data); // Set the listings state to the data
       setLoading(false);
     };
@@ -111,6 +111,20 @@ function Search() {
     urlParams.set("order", sidebardata.order); // Set the order query to the order state
     const searchQuery = urlParams.toString(); // Convert the URLSearchParams object to a string
     navigate(`/search?${searchQuery}`); // Navigate to the search page with the search query
+  };
+
+  const onShowMoreClick = async () => {
+    const numberOfListings = listings.length; // Get the number of listings currently displayed
+    const startIndex = numberOfListings; // Set the startIndex to the number of listings currently displayed
+    const urlParams = new URLSearchParams(location.search); // Create a new URLSearchParams object from the current URL search params
+    urlParams.set("startIndex", startIndex); // Set the startIndex query to the startIndex variable
+    const searchQuery = urlParams.toString(); // Convert the URLSearchParams object to a string
+    const res = await fetch(`/api/listing/get?${searchQuery}`); // Fetch the listings based on the search query
+    const data = await res.json(); // Get the JSON data from the response
+    if (data.length < 9) {
+      setShowMore(false);
+    }
+    setListings([...listings, ...data]); // Add the new listings to the existing listings
   };
 
   return (
@@ -233,6 +247,17 @@ function Search() {
             listings.map((listing) => (
               <ListingItem key={listing._id} listing={listing} />
             ))}
+
+          {showMore && (
+            <button
+              onClick={() => {
+                onShowMoreClick();
+              }}
+              className="text-green-700 hover:underline p-7 text-center w-full"
+            >
+              Show more
+            </button>
+          )}
         </div>
       </div>
     </div>
